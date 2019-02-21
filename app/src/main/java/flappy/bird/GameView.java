@@ -21,6 +21,8 @@ public class GameView extends View {
     Point point;
     int dWidth, dHeight;
     Rect rect;
+    Bitmap[] birds;
+    int birdFrame = 0;
 
     public GameView(Context context){
         super(context);
@@ -38,6 +40,9 @@ public class GameView extends View {
         dWidth = point.x;
         dHeight = point.y;
         rect = new Rect(0, 0, dWidth, dHeight);
+        birds = new Bitmap[2];
+        birds[0] = BitmapFactory.decodeResource(getResources(), R.drawable.birdup);
+        birds[1] = BitmapFactory.decodeResource(getResources(), R.drawable.birddown);
     }
 
     @Override
@@ -46,6 +51,12 @@ public class GameView extends View {
 
 //        canvas.drawBitmap(background, 0, 0, null);
         canvas.drawBitmap(background, null, rect, null);
+        if(birdFrame == 0){
+            birdFrame = 1;
+        } else {
+            birdFrame = 0;
+        }
+        canvas.drawBitmap(birds[birdFrame], dWidth/2 - birds[0].getWidth()/2, dHeight/2 - birds[0].getHeight()/2, null);
         handler.postDelayed(runnable, UPDATE_MILIS);
     }
 }
