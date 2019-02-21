@@ -12,12 +12,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.os.Handler;
 
+import java.util.Random;
+
 public class GameView extends View {
 
     Handler handler;
     Runnable runnable;
     final int UPDATE_MILIS=30;
     Bitmap background;
+    Bitmap topTube, bottomTube;
     Display display;
     Point point;
     int dWidth, dHeight;
@@ -26,6 +29,15 @@ public class GameView extends View {
     int birdFrame = 0;
     int velocity=0, gravity=3;
     int birdX, birdY;
+    boolean gameState = false;
+    int gap = 500;
+    int minTubeOffset, maxTubeOffset;
+    int numberOfTubes = 4;
+    int distanceBetweenTubes;
+    int tubeX;
+    int topTubeY;
+    Random random;
+
 
     public GameView(Context context){
         super(context);
@@ -37,6 +49,8 @@ public class GameView extends View {
             }
         };
         background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+        topTube    = BitmapFactory.decodeResource(getResources(), R.drawable.tubedown);
+        bottomTube = BitmapFactory.decodeResource(getResources(), R.drawable.tubeup);
         display    = ((Activity)getContext()).getWindowManager().getDefaultDisplay();
         point      = new Point();
         display.getSize(point);
@@ -49,6 +63,12 @@ public class GameView extends View {
         birds[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bird_downflap);
         birdX = dWidth/2 - birds[0].getWidth()/2;
         birdY = dHeight/2 - birds[0].getHeight()/2;
+        distanceBetweenTubes = dWidth*3/4;
+        minTubeOffset = gap/2;
+        maxTubeOffset = dHeight - minTubeOffset - gap;
+        random  = new Random();
+        tubeX   = dWidth/2 - topTube.getWidth()/2;
+        topTubeY = minTubeOffset + random.nextInt(maxTubeOffset - minTubeOffset +1);
     }
 
     @Override
@@ -65,13 +85,17 @@ public class GameView extends View {
             birdFrame = 0;
         }
 
-        if(birdY < dHeight - birds[0].getHeight() || velocity < 0){
-            velocity += gravity;
-            birdY += velocity;
+        if(gameState) {
+            if (birdY < dHeight - birds[0].getHeight() || velocity < 0) {
+                velocity += gravity;
+                birdY += velocity;
+            }
+            canvas.drawBitmap(topTube, tubeX, topTubeY - topTube.getHeight(), null);
+            canvas.drawBitmap(bottomTube, tubeX, topTubeY + gap, null);
         }
-
         canvas.drawBitmap(birds[birdFrame], birdX, birdY, null);
         handler.postDelayed(runnable, UPDATE_MILIS);
+
     }
 
     public boolean onTouchEvent(MotionEvent event){
@@ -80,6 +104,8 @@ public class GameView extends View {
         int action =  event.getAction();
         if (action == MotionEvent.ACTION_DOWN){
             velocity = -30;
+            gameState = true;
+            topTubeY = minTubeOffset + random.nextInt(maxTubeOffset - minTubeOffset +1);
         }
 
         return true;
