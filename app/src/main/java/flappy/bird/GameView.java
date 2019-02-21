@@ -34,9 +34,10 @@ public class GameView extends View {
     int minTubeOffset, maxTubeOffset;
     int numberOfTubes = 4;
     int distanceBetweenTubes;
-    int tubeX;
-    int topTubeY;
+    int[] tubeX = new int[numberOfTubes];
+    int[] topTubeY = new int[numberOfTubes];
     Random random;
+    int tubeVelocity = 8;
 
 
     public GameView(Context context){
@@ -67,8 +68,10 @@ public class GameView extends View {
         minTubeOffset = gap/2;
         maxTubeOffset = dHeight - minTubeOffset - gap;
         random  = new Random();
-        tubeX   = dWidth/2 - topTube.getWidth()/2;
-        topTubeY = minTubeOffset + random.nextInt(maxTubeOffset - minTubeOffset +1);
+        for(int i=0; i <numberOfTubes; i++){
+            tubeX[i]   = dWidth + i*distanceBetweenTubes;
+            topTubeY[i] = minTubeOffset + random.nextInt(maxTubeOffset - minTubeOffset +1);
+        }
     }
 
     @Override
@@ -90,8 +93,11 @@ public class GameView extends View {
                 velocity += gravity;
                 birdY += velocity;
             }
-            canvas.drawBitmap(topTube, tubeX, topTubeY - topTube.getHeight(), null);
-            canvas.drawBitmap(bottomTube, tubeX, topTubeY + gap, null);
+            for(int i=0; i<numberOfTubes; i++){
+                tubeX[i] -= tubeVelocity;
+                canvas.drawBitmap(topTube, tubeX[i], topTubeY[i] - topTube.getHeight(), null);
+                canvas.drawBitmap(bottomTube, tubeX[i], topTubeY[i] + gap, null);
+            }
         }
         canvas.drawBitmap(birds[birdFrame], birdX, birdY, null);
         handler.postDelayed(runnable, UPDATE_MILIS);
@@ -105,7 +111,6 @@ public class GameView extends View {
         if (action == MotionEvent.ACTION_DOWN){
             velocity = -30;
             gameState = true;
-            topTubeY = minTubeOffset + random.nextInt(maxTubeOffset - minTubeOffset +1);
         }
 
         return true;
