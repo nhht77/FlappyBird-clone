@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.Display;
+import android.view.MotionEvent;
 import android.view.View;
 import android.os.Handler;
 
@@ -23,6 +24,8 @@ public class GameView extends View {
     Rect rect;
     Bitmap[] birds;
     int birdFrame = 0;
+    int velocity=0, gravity=3;
+    int birdX, birdY;
 
     public GameView(Context context){
         super(context);
@@ -43,6 +46,8 @@ public class GameView extends View {
         birds = new Bitmap[2];
         birds[0] = BitmapFactory.decodeResource(getResources(), R.drawable.birdup);
         birds[1] = BitmapFactory.decodeResource(getResources(), R.drawable.birddown);
+        birdX = dWidth/2 - birds[0].getWidth()/2;
+        birdY = dHeight/2 - birds[0].getHeight()/2;
     }
 
     @Override
@@ -56,7 +61,20 @@ public class GameView extends View {
         } else {
             birdFrame = 0;
         }
-        canvas.drawBitmap(birds[birdFrame], dWidth/2 - birds[0].getWidth()/2, dHeight/2 - birds[0].getHeight()/2, null);
+        velocity += gravity;
+        birdY += velocity;
+        canvas.drawBitmap(birds[birdFrame], birdX, birdY, null);
         handler.postDelayed(runnable, UPDATE_MILIS);
+    }
+
+    public boolean onTouchEvent(MotionEvent event){
+
+
+        int action =  event.getAction();
+        if (action == MotionEvent.ACTION_DOWN){
+            velocity = -30;
+        }
+
+        return true;
     }
 }
