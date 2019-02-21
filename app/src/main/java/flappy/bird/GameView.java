@@ -22,7 +22,7 @@ public class GameView extends View {
     Point point;
     int dWidth, dHeight;
     Rect rect;
-    Bitmap birds;
+    Bitmap[] birds;
     int birdFrame = 0;
     int velocity=0, gravity=3;
     int birdX, birdY;
@@ -43,9 +43,12 @@ public class GameView extends View {
         dWidth = point.x;
         dHeight = point.y;
         rect = new Rect(0, 0, dWidth, dHeight);
-        birds = BitmapFactory.decodeResource(getResources(), R.drawable.birdup);
-        birdX = dWidth/2 - birds.getWidth()/2;
-        birdY = dHeight/2 - birds.getHeight()/2;
+        birds = new Bitmap[3];
+        birds[0] = BitmapFactory.decodeResource(getResources(), R.drawable.bird_upflap);
+        birds[1] = BitmapFactory.decodeResource(getResources(), R.drawable.bird_midflap);
+        birds[2] = BitmapFactory.decodeResource(getResources(), R.drawable.bird_downflap);
+        birdX = dWidth/2 - birds[0].getWidth()/2;
+        birdY = dHeight/2 - birds[0].getHeight()/2;
     }
 
     @Override
@@ -54,14 +57,20 @@ public class GameView extends View {
 
 //        canvas.drawBitmap(background, 0, 0, null);
         canvas.drawBitmap(background, null, rect, null);
+        if(birdFrame == 0){
+            birdFrame = 1;
+        } else if ( birdFrame == 1){
+            birdFrame = 2;
+        } else if (birdFrame == 2) {
+            birdFrame = 0;
+        }
 
-
-        if(birdY < dHeight - birds.getHeight() || velocity < 0){
+        if(birdY < dHeight - birds[0].getHeight() || velocity < 0){
             velocity += gravity;
             birdY += velocity;
         }
 
-        canvas.drawBitmap(birds, birdX, birdY, null);
+        canvas.drawBitmap(birds[birdFrame], birdX, birdY, null);
         handler.postDelayed(runnable, UPDATE_MILIS);
     }
 
