@@ -39,7 +39,7 @@ public class GameView extends View {
     Random random;
     int tubeVelocity = 8;
 
-
+//     Dummy comment
     public GameView(Context context){
         super(context);
         handler = new Handler();
